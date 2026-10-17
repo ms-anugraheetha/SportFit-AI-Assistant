@@ -1,0 +1,15 @@
+# Pinned to the versions the project was developed and tested against (October 2026).
+# mcp is pinned to the 1.x line: 2.x renamed FastMCP to MCPServer and changed other APIs.
+mcp>=1.30,<2
+fastapi==0.143.3
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.1.5
+psycopg[binary]==3.3.6
+alembic==1.20.0
+pydantic==2.14.1
+pydantic-settings==2.16.0
+email-validator==2.3.0
+openai==3.33.0
+httpx==0.28.1
+argon2-cffi==25.1.0
+itsdangerous==2.2.0

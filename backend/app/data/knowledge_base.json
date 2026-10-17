@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "description": "Curated knowledge base for the SportFit AI Assistant academic prototype. Entries marked source_type 'sportfit_website' paraphrase pages on https://sportfitkw.com/ as read on the retrieval date. Entries marked 'project_authored' are written by the project author and are NOT statements by SportFit.",
+    "retrieved": "2026-10-17",
+    "categories": ["services", "faq", "safety", "handoff", "limitations", "how_to"]
+  },
+  "entries": [
+    {
+      "id": "svc-equipment-repair",
+      "category": "services",
+      "title": "Equipment repair",
+      "content": "SportFit's Services page lists Equipment Repair: on-site repairs, with preventive services when needed. The page suggests a service contract but acknowledges one may not always be feasible. Requests are made through a Service Request Form on the website.",
+      "keywords": ["repair", "fix", "broken", "on-site", "onsite", "technician", "service request", "faulty"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/service.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "svc-preventive-maintenance",
+      "category": "services",
+      "title": "Preventive maintenance",
+      "content": "The Services page describes Preventive Maintenance as service contracts billed monthly, bimonthly or quarterly, intended to keep equipment in good condition, reduce downtime and prevent major failures. No prices are published on the page.",
+      "keywords": ["preventive", "maintenance", "contract", "monthly", "quarterly", "bimonthly", "plan", "servicing", "downtime"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/service.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "svc-assembly-disassembly",
+      "category": "services",
+      "title": "Assembly and disassembly",
+      "content": "The Services page states that qualified fitness equipment technicians set up or remove fitness units for both commercial and residential customers.",
+      "keywords": ["assembly", "assemble", "disassembly", "disassemble", "setup", "set up", "move", "moving", "remove", "dismantle"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/service.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "svc-upholstery-repair",
+      "category": "services",
+      "title": "Upholstery repair",
+      "content": "The Services page lists Upholstery Repair: professional upholstery work from start to finish to refurbish worn but functional strength equipment, presented as a more affordable option than buying new equipment. No prices are published on the page.",
+      "keywords": ["upholstery", "seat", "pad", "padding", "cushion", "bench", "worn", "refurbish", "cover"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/service.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "svc-installation-and-customers",
+      "category": "services",
+      "title": "Installation and who SportFit serves",
+      "content": "The home page describes fitness equipment repair and installation in Kuwait, and repairs and servicing for residential and commercial gyms. Industries listed include hotels, apartments, education, health clubs, corporate and residential. The Services page does not describe installation as a separate service.",
+      "keywords": ["installation", "install", "kuwait", "gym", "residential", "commercial", "hotel", "apartment", "corporate", "industries", "home"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "faq-equipment-types",
+      "category": "faq",
+      "title": "What equipment is serviced",
+      "content": "SportFit's FAQ says it services treadmills, ellipticals, weight machines and other equipment, and that customers can ask whether a specific piece of equipment is eligible.",
+      "keywords": ["treadmill", "elliptical", "weight", "machine", "equipment", "types", "bike", "eligible", "brands"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/faq.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "faq-repair-time",
+      "category": "faq",
+      "title": "How long a repair takes",
+      "content": "The FAQ says repair time depends on how complicated the problem is, and that an estimated timeframe is given when service is requested. No specific durations or technician schedules are published.",
+      "keywords": ["how long", "time", "duration", "timeframe", "days", "fast", "quick", "schedule", "when"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/faq.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "faq-technicians",
+      "category": "faq",
+      "title": "Technician qualifications (as stated by SportFit)",
+      "content": "The FAQ states that SportFit technicians have training, certification and experience with many gym equipment brands and models, and take regular courses to keep up with new technology. This is SportFit's own claim; this prototype cannot independently verify it.",
+      "keywords": ["technician", "certified", "certification", "experienced", "trained", "qualified", "brands", "skilled"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/faq.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "faq-maintenance-plans",
+      "category": "faq",
+      "title": "Maintenance plans",
+      "content": "The FAQ says customizable maintenance plans are available to help equipment last and perform well, and that customer service can provide details. No plan prices or terms are published.",
+      "keywords": ["maintenance", "plan", "plans", "contract", "customizable", "price", "cost"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/faq.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "faq-warranty",
+      "category": "faq",
+      "title": "Warranty",
+      "content": "The FAQ says SportFit offers warranties on repairs and certain replacement parts, that the length varies, and that customer service can confirm the details for a given service. Specific warranty terms are not published, so this assistant cannot state them.",
+      "keywords": ["warranty", "guarantee", "covered", "replacement", "parts", "assurance"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/faq.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "lim-spare-parts",
+      "category": "limitations",
+      "title": "Spare parts (not verified)",
+      "content": "Spare parts are not listed on the Services page. The FAQ mentions warranties on certain replacement parts, but it has not been verified whether SportFit sells spare parts, what is in stock, or what they cost. For spare-part questions, please contact SportFit directly.",
+      "keywords": ["spare", "parts", "part", "replacement", "stock", "availability", "belt", "motor", "order"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/service.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "lim-pricing",
+      "category": "limitations",
+      "title": "Prices and quotes (not published)",
+      "content": "No service prices, quotes, or technician schedules were found on the pages reviewed, so this assistant cannot give any. Please contact SportFit for pricing.",
+      "keywords": ["price", "prices", "cost", "quote", "how much", "fee", "charge", "estimate", "cheap", "payment"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/service.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "how-to-request-real",
+      "category": "how_to",
+      "title": "Requesting service from SportFit (real)",
+      "content": "SportFit's Services page refers to a Service Request Form on its website, and its Contact page has a 'Get in touch' form. This prototype cannot submit anything to SportFit. To request real service, use SportFit's official website or contact details.",
+      "keywords": ["request", "book", "appointment", "real", "submit", "form", "order", "service request"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/contact.html",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "how-to-request-demo",
+      "category": "how_to",
+      "title": "Submitting a demonstration repair request here",
+      "content": "In this prototype you can record a demonstration repair request. Needed: your name, email, general service area, equipment type, a problem description and your preferred contact method. Optional: phone (required if you prefer phone or WhatsApp), brand, model, serial number and a preferred appointment time. You review a summary and must explicitly confirm before anything is saved. The request is stored only in this academic demo, not sent to SportFit.",
+      "keywords": ["submit", "request", "repair", "demo", "create", "report", "fault", "start"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "how-to-describe-fault",
+      "category": "how_to",
+      "title": "What to include when describing a faulty machine",
+      "content": "Helpful details for a technician: the equipment type, brand and model, serial number if you can find it, when the problem started, any error code or message on the console, whether it is used at home or commercially, and what happens (for example, stops mid-use or makes a noise). Describe only what you observe; do not open covers or take parts apart to find out more. This is general guidance, not a diagnosis.",
+      "keywords": ["describe", "information", "details", "faulty", "problem", "error", "code", "model", "serial", "what to include", "need"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "how-to-track-demo",
+      "category": "how_to",
+      "title": "Tracking a demonstration request",
+      "content": "After a demo request is recorded you receive a reference like SFD-XXXX-XXXX-XXXX. Enter it to see the current status: received, under review, in progress, completed or cancelled. Tracking shows demonstration data only and never reveals contact details.",
+      "keywords": ["track", "tracking", "status", "reference", "check", "progress", "follow up", "ticket"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "safety-stop-using",
+      "category": "safety",
+      "title": "Stop using damaged or malfunctioning equipment",
+      "content": "If equipment is damaged, unstable, making unusual grinding or banging noises, behaving unpredictably, or has a loose, cracked or frayed part, stop using it and keep others away from it. Do not keep using it to test whether the problem continues. Contact a qualified technician. This is general safety guidance, not a diagnosis.",
+      "keywords": ["unsafe", "safety", "danger", "dangerous", "damaged", "broken", "noise", "wobble", "unstable", "crack", "frayed", "loose", "stop", "concern", "hurt"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "safety-electrical",
+      "category": "safety",
+      "title": "Smoke, burning smell, sparks or electrical faults",
+      "content": "If you see smoke or sparks, smell burning, or a breaker keeps tripping, stop using the machine. If it is safe to do so, switch it off and disconnect it from power, and keep people away. Do not open motor covers, consoles or any electrical housing. If there is fire or anyone is hurt, contact local emergency services first. Then contact a qualified technician.",
+      "keywords": ["electrical", "smoke", "smell", "burning", "spark", "sparks", "breaker", "shock", "power", "plug", "fire", "motor", "wire", "wiring"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "safety-no-bypass",
+      "category": "safety",
+      "title": "Never bypass safety features or attempt hazardous repairs",
+      "content": "Never bypass, tape down or disable safety features such as safety keys, emergency stops or guards, and do not modify equipment. Avoid repairs involving tensioned cables, belts, springs, weights or electrical parts; these are for a qualified technician.",
+      "keywords": ["bypass", "safety key", "emergency stop", "guard", "disable", "modify", "repair myself", "diy", "fix myself", "cable", "belt", "spring", "tension"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "safety-injury",
+      "category": "safety",
+      "title": "If someone has been injured",
+      "content": "If someone has been injured, get appropriate medical help first. This assistant is not a medical or emergency service. Afterwards, stop using the equipment until a qualified technician has inspected it.",
+      "keywords": ["injury", "injured", "hurt", "accident", "fell", "pain", "emergency", "medical"],
+      "source_type": "project_authored",
+      "source_url": "",
+      "retrieved": "2026-10-17"
+    },
+    {
+      "id": "handoff-contact",
+      "category": "handoff",
+      "title": "SportFit's published contact details",
+      "content": "Contact details shown on SportFit's website: phone +965 6074 8388, email info@sportfitkw.com, address: Barcelona complex, Floor 1, Office 17, Mahboula, Block 1, Street 114, Kuwait. The site also shows a WhatsApp link for the same phone number. Opening hours were not found. Please confirm details on the official website. This assistant cannot place calls, send emails or transfer you to a person; you need to contact SportFit yourself.",
+      "keywords": ["human", "agent", "person", "contact", "phone", "call", "email", "address", "whatsapp", "speak", "talk", "support", "help", "office", "location"],
+      "source_type": "sportfit_website",
+      "source_url": "https://sportfitkw.com/contact.html",
+      "retrieved": "2026-10-17"
+    }
+  ]
+}
