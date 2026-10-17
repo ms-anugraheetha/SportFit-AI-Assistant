@@ -40,6 +40,17 @@ class Settings(BaseSettings):
     tool_timeout_seconds: float = 15.0
     llm_timeout_seconds: float = 45.0
 
+    # Abuse protection (per client IP, per minute)
+    rate_limit_chat_per_minute: int = 20
+    rate_limit_tracking_per_minute: int = 30
+    rate_limit_create_per_minute: int = 5
+    max_body_bytes: int = 32768
+    # Set true only behind a trusted reverse proxy (e.g. a Hugging Face Space) so the real client
+    # IP is read from X-Forwarded-For. Left false, that header is ignored because clients can forge it.
+    trust_proxy_headers: bool = False
+
+    conversation_ttl_seconds: int = 1800
+
     @property
     def sqlalchemy_url(self) -> str:
         if not self.database_url:

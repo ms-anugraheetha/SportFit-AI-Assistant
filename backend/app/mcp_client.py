@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import logging
 import sys
 from contextlib import AsyncExitStack
 from pathlib import Path
@@ -22,6 +23,10 @@ EXPECTED_TOOLS = MODEL_VISIBLE_TOOLS | {"create_service_request"}
 
 class McpUnavailableError(RuntimeError):
     """The MCP server process is not running or did not answer in time."""
+
+
+class McpToolNotFoundError(McpUnavailableError):
+    """The requested tool does not exist on the server (a caller bug, not a process failure)."""
 
 
 class McpToolClient:
@@ -95,7 +100,7 @@ class McpToolClient:
         if self._session is None:
             raise McpUnavailableError("MCP client is not connected")
         if name not in self.tools:
-            raise McpUnavailableError(f"unknown tool: {name}")
+            raise McpToolNotFoundError(f"unknown tool: {name}")
         try:
             result = await asyncio.wait_for(self._session.call_tool(name, arguments or {}), timeout=self._timeout)
         except asyncio.TimeoutError as exc:
@@ -119,3 +124,114 @@ class McpToolClient:
                 if isinstance(parsed, dict):
                     return parsed
         return {"ok": False, "error": "bad_output", "message": "the tool returned an unreadable result"}
+
+
+log = logging.getLogger("sportfit.mcp_client")
+
+
+class ManagedMcpClient:
+    """Keeps one MCP server subprocess alive for the whole app and restarts it if it dies.
+
+    anyio requires a stdio session to be opened and closed by the *same task*. Request handlers run
+    in different tasks, so a single supervisor task owns the subprocess; handlers only call tools.
+    """
+
+    def __init__(self, database_url: str, timeout: float = 15.0, restart_backoff: float = 2.0) -> None:
+        self._database_url = database_url
+        self._timeout = timeout
+        self._backoff = restart_backoff
+        self._task: asyncio.Task[None] | None = None
+        self._client: McpToolClient | None = None
+        self._ready = asyncio.Event()
+        self._wake = asyncio.Event()
+        self._stop = asyncio.Event()
+
+    @property
+    def connected(self) -> bool:
+        return self._ready.is_set() and self._client is not None
+
+    @property
+    def tools(self) -> dict[str, Any]:
+        return self._client.tools if self._client else {}
+
+    def openai_tool_specs(self) -> list[dict[str, Any]]:
+        return self._client.openai_tool_specs() if self._client else []
+
+    async def start(self, wait: float = 20.0) -> None:
+        if self._task is None:
+            self._task = asyncio.create_task(self._run(), name="mcp-supervisor")
+        try:
+            await asyncio.wait_for(self._ready.wait(), wait)
+        except asyncio.TimeoutError as exc:
+            raise McpUnavailableError("MCP server did not start in time") from exc
+
+    async def stop(self) -> None:
+        self._stop.set()
+        self._wake.set()
+        if self._task is not None:
+            await self._task
+            self._task = None
+
+    def request_restart(self, failed: McpToolClient | None = None) -> None:
+        if failed is not None and failed is not self._client:
+            return  # someone already replaced it
+        self._ready.clear()
+        self._wake.set()
+
+    async def _sleep(self, seconds: float) -> None:
+        try:
+            await asyncio.wait_for(self._stop.wait(), seconds)
+        except asyncio.TimeoutError:
+            pass
+
+    async def _run(self) -> None:
+        while not self._stop.is_set():
+            client = McpToolClient(self._database_url, self._timeout)
+            try:
+                await client.start()
+            except Exception as exc:  # start-up failure: retry after a pause
+                log.warning("MCP server failed to start: %s", type(exc).__name__)
+                await self._sleep(self._backoff)
+                continue
+            self._client = client
+            self._wake.clear()
+            self._ready.set()
+            await self._wake.wait()
+            self._ready.clear()
+            self._client = None
+            try:
+                await client.stop()
+            except Exception:
+                log.warning("MCP server did not shut down cleanly")
+            if not self._stop.is_set():
+                await self._sleep(self._backoff)
+
+    async def call_tool(
+        self, name: str, arguments: dict[str, Any] | None = None, retry: bool = True
+    ) -> dict[str, Any]:
+        """Call a tool. On a process failure the server is restarted; the call is retried once only
+        if ``retry`` is true. Never retry non-idempotent calls (creating a request)."""
+        if not self._ready.is_set():
+            if self._task is None or self._stop.is_set():
+                raise McpUnavailableError("MCP server is not running")
+            try:  # a restart may be in progress: give it a few seconds
+                await asyncio.wait_for(self._ready.wait(), 5.0)
+            except asyncio.TimeoutError as exc:
+                raise McpUnavailableError("MCP server is not running") from exc
+        client = self._client
+        if client is None:
+            raise McpUnavailableError("MCP server is not running")
+        try:
+            return await client.call_tool(name, arguments)
+        except McpToolNotFoundError:
+            raise
+        except McpUnavailableError:
+            self.request_restart(client)
+            if not retry:
+                raise
+        try:
+            await asyncio.wait_for(self._ready.wait(), 10.0)
+        except asyncio.TimeoutError as exc:
+            raise McpUnavailableError("MCP server did not come back") from exc
+        assert self._client is not None
+        return await self._client.call_tool(name, arguments)
