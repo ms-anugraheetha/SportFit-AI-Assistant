@@ -1,4 +1,9 @@
-"""Small admin helpers.   python -m app.cli hash-password   |   python -m app.cli gen-secret"""
+"""Small admin helpers (run from the backend folder).
+
+  python -m app.cli hash-password            create a STAFF_PASSWORD_HASH value
+  python -m app.cli gen-secret               create a SESSION_SECRET value
+  python -m app.cli clear-demo-data --yes    DELETE every request, status history and staff session
+"""
 
 import getpass
 import secrets
@@ -22,6 +27,19 @@ def main(argv: list[str]) -> int:
         return 0
     if cmd == "gen-secret":
         print(secrets.token_urlsafe(48))
+        return 0
+    if cmd == "clear-demo-data":
+        if "--yes" not in argv:
+            print("This deletes ALL service requests, status history and staff sessions in the configured database.")
+            print("Re-run with --yes to confirm.")
+            return 1
+        from sqlalchemy import text
+
+        from app.db import session_scope
+
+        with session_scope() as s:
+            s.execute(text("TRUNCATE service_requests, status_history, staff_sessions RESTART IDENTITY CASCADE"))
+        print("Demo data cleared.")
         return 0
     print(__doc__)
     return 2
