@@ -26,6 +26,7 @@ from app.mcp_client import ManagedMcpClient, McpUnavailableError
 from app.models import STATUSES
 from app.orchestrator import ChatOrchestrator
 from app.staff_api import register_staff_routes
+from app.static_site import register_static_site
 from app.schemas import STATUS_LABELS, PublicTracking, ServiceRequestCreate
 
 log = logging.getLogger("sportfit.api")
@@ -334,6 +335,7 @@ def create_app(
         }
 
     register_staff_routes(app, limited)
+    register_static_site(app)  # no-op unless the frontend has been built into backend/static
     return app
 
 
