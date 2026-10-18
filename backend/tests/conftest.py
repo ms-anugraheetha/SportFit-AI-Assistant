@@ -50,7 +50,7 @@ def db(migrated_db):
     from app.db import get_engine
 
     with get_engine().begin() as conn:
-        conn.execute(text("TRUNCATE service_requests, status_history RESTART IDENTITY CASCADE"))
+        conn.execute(text("TRUNCATE service_requests, status_history, staff_sessions RESTART IDENTITY CASCADE"))
     yield
 
 

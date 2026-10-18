@@ -6,7 +6,7 @@ changes are plain code, so a model can never decide that a write "succeeded".
 
 import secrets
 
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -90,3 +90,92 @@ def update_status(session: Session, raw_reference: str, new_status: str, actor: 
         row.status = new_status  # updated_at is refreshed by the column's onupdate
         session.flush()
     return row
+
+
+# ---- Staff dashboard queries ----
+
+SORT_COLUMNS = {
+    "created_at": ServiceRequest.created_at,
+    "updated_at": ServiceRequest.updated_at,
+    "status": ServiceRequest.status,
+    "customer_name": ServiceRequest.customer_name,
+    "equipment_type": ServiceRequest.equipment_type,
+}
+SUMMARY_LENGTH = 100
+
+
+def _like_pattern(term: str) -> str:
+    """Escape LIKE wildcards so a search for '%' or '_' matches literally."""
+    escaped = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return f"%{escaped}%"
+
+
+def problem_summary(text: str) -> str:
+    one_line = " ".join(text.split())
+    return one_line if len(one_line) <= SUMMARY_LENGTH else one_line[: SUMMARY_LENGTH - 1].rstrip() + "\u2026"
+
+
+def list_requests(
+    session: Session,
+    *,
+    q: str | None = None,
+    status: str | None = None,
+    sort: str = "created_at",
+    order: str = "desc",
+    page: int = 1,
+    page_size: int = 10,
+) -> tuple[list[ServiceRequest], int]:
+    """Search / filter / sort / paginate. ``sort`` is whitelisted; every value is bound as a parameter."""
+    if sort not in SORT_COLUMNS:
+        raise ValueError("unsupported sort column")
+    if status is not None and status not in STATUSES:
+        raise InvalidStatusError(status)
+    stmt = select(ServiceRequest)
+    if status:
+        stmt = stmt.where(ServiceRequest.status == status)
+    if q and q.strip():
+        pattern = _like_pattern(q.strip())
+        stmt = stmt.where(
+            or_(
+                *(
+                    col.ilike(pattern, escape="\\")
+                    for col in (
+                        ServiceRequest.request_reference,
+                        ServiceRequest.customer_name,
+                        ServiceRequest.email,
+                        ServiceRequest.equipment_type,
+                        ServiceRequest.equipment_brand,
+                        ServiceRequest.problem_description,
+                    )
+                )
+            )
+        )
+    total = session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    col = SORT_COLUMNS[sort]
+    primary = col.asc() if order == "asc" else col.desc()
+    rows = session.scalars(
+        stmt.order_by(primary, ServiceRequest.id.desc()).limit(page_size).offset((page - 1) * page_size)
+    ).all()
+    return list(rows), total
+
+
+def status_counts(session: Session) -> dict[str, int]:
+    counts = {status: 0 for status in STATUSES}
+    for status, n in session.execute(select(ServiceRequest.status, func.count()).group_by(ServiceRequest.status)):
+        counts[status] = n
+    return counts
+
+
+def get_request_with_history(session: Session, raw_reference: str) -> tuple[ServiceRequest, list[StatusHistory]] | None:
+    reference = normalize_reference(raw_reference)
+    row = (
+        session.scalar(select(ServiceRequest).where(ServiceRequest.request_reference == reference))
+        if reference
+        else None
+    )
+    if row is None:
+        return None
+    history = session.scalars(
+        select(StatusHistory).where(StatusHistory.request_id == row.id).order_by(StatusHistory.changed_at, StatusHistory.id)
+    ).all()
+    return row, list(history)

@@ -1,6 +1,6 @@
 """FastAPI application: public API (chat, requests, tracking, knowledge, health).
 
-Staff endpoints are added in Phase 3 as a separate router. Nothing here lets the model touch the
+Staff endpoints live in staff_api.py (session + CSRF protected). Nothing here lets the model touch the
 database directly: writes go through deterministic service functions or the allowlisted MCP tools.
 """
 
@@ -25,6 +25,7 @@ from app.llm import ChatLLM, HFChatClient
 from app.mcp_client import ManagedMcpClient, McpUnavailableError
 from app.models import STATUSES
 from app.orchestrator import ChatOrchestrator
+from app.staff_api import register_staff_routes
 from app.schemas import STATUS_LABELS, PublicTracking, ServiceRequestCreate
 
 log = logging.getLogger("sportfit.api")
@@ -197,7 +198,7 @@ def create_app(
 
     app = FastAPI(
         title="SportFit AI Assistant (independent academic prototype)",
-        version="0.2.0",
+        version="0.3.0",
         lifespan=lifespan,
         docs_url=None if settings.app_env == "production" else "/docs",
         redoc_url=None,
@@ -210,6 +211,7 @@ def create_app(
         "chat": RateLimiter(settings.rate_limit_chat_per_minute),
         "tracking": RateLimiter(settings.rate_limit_tracking_per_minute),
         "create": RateLimiter(settings.rate_limit_create_per_minute),
+        "login": RateLimiter(settings.rate_limit_login_per_minute),
     }
 
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes)
@@ -331,6 +333,7 @@ def create_app(
             "disclaimer": DISCLAIMER,
         }
 
+    register_staff_routes(app, limited)
     return app
 
 

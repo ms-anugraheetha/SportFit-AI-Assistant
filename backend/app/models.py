@@ -74,3 +74,19 @@ class StatusHistory(Base):
     changed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class StaffSession(Base):
+    """Server-side staff login session. Only a keyed hash of the cookie token is stored, so a database
+    leak does not leak usable sessions, and deleting the row (logout / expiry) really ends the session."""
+
+    __tablename__ = "staff_sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    csrf_token: Mapped[str] = mapped_column(String(64))
+    username: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)

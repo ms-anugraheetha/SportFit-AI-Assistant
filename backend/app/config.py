@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     staff_username: str = "staff"
     staff_password_hash: str = ""
     session_secret: str = ""
+    staff_session_hours: int = 8
+    rate_limit_login_per_minute: int = 5
 
     app_env: str = "development"
     cors_origins: str = ""

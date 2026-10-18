@@ -134,3 +134,29 @@ class StatusUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")  # a status update can never carry other fields
 
     status: Status
+
+
+class StatusHistoryItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    old_status: Status
+    new_status: Status
+    changed_by: str
+    changed_at: datetime
+
+
+class StaffRequestFull(StaffRequestDetail):
+    history: list[StatusHistoryItem] = []
+
+
+class StaffRequestPage(BaseModel):
+    items: list[StaffRequestSummary]
+    page: int
+    page_size: int
+    total: int
+    total_pages: int
+
+
+class StaffSummary(BaseModel):
+    total: int
+    counts: dict[str, int]
