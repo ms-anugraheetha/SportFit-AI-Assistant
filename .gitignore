@@ -24,3 +24,8 @@ backend/static/
 .idea/
 .vscode/
 *.log
+
+# Neon CLI local context and pulled env files
+.neon
+.env.local
+neon.env

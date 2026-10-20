@@ -4,11 +4,26 @@
 
 Hugging Face's Docker Space documentation says: set `sdk: docker` in the README front matter, the default port is 7860 (`app_port` changes it), the container runs as user id 1000, secrets are available as environment variables at runtime, and the disk is not persistent. This project follows that (see the `Dockerfile` and the README header).
 
+## 0. Optional but recommended: test the Docker image on your own computer first
+
+This builds the same `Dockerfile` the Space uses and runs it with a throwaway local PostgreSQL (`docker-compose.yml`). It is how you find Dockerfile problems before the Space build.
+
+1. Install Docker Desktop (`winget install -e --id Docker.DockerDesktop`), restart if asked, start Docker Desktop and wait until it says it is running.
+2. Make sure `backend\.env` has `HF_TOKEN`, `SESSION_SECRET` and `STAFF_PASSWORD_HASH` filled in (see the README).
+3. From the project folder: `docker compose up --build`. The first build takes several minutes.
+4. Open http://localhost:8000 (customer) and http://localhost:8000/staff. The compose file forces its own local database and `APP_ENV=development`, whatever `backend\.env` says.
+5. Stop with `Ctrl+C` then `docker compose down` (`docker compose down -v` also deletes the local data).
+
+The local compose database is **not** what the public Space uses; the Space needs the external database below.
+
 ## 1. Create the external PostgreSQL database
 
 A Space does not keep files between restarts, so the data must live in an external database. Any hosted PostgreSQL works (for example Neon or Supabase free tiers).
 
 1. Create a project and a database; copy the **connection string** (it looks like `postgresql://user:password@host/dbname?sslmode=require`).
+   Alternative with the Neon CLI: `neon init -y --org-id <ORG_ID> --project-id <PROJECT_ID> --branch production --services postgres`, then `neon deploy`, which pulls the connection string into `.env.local`. The app itself needs no Neon-specific code: it only reads `DATABASE_URL`.
+   Prefer the **direct (non-pooled)** connection string for this app. It has not been tested against Neon's pooled endpoint.
+   After setting `DATABASE_URL`, run `python -m alembic upgrade head` and then `python -m scripts.check_db` (in `backend`) to prove the connection and a real write/read round trip.
 2. Keep it private. It becomes the `DATABASE_URL` secret. The app converts `postgresql://` and `postgres://` forms automatically.
 
 ## 2. Create the Hugging Face token
