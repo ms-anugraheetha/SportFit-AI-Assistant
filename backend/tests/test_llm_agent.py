@@ -94,7 +94,7 @@ async def test_agent_loop_is_capped_and_forces_a_tool_free_final_answer():
     always_tool = tool_call_message(("c", "search_services", '{"query": "x"}'))
     llm = ScriptedLLM([always_tool, always_tool, always_tool, text_message("Final answer.")])
     tools = FakeTools()
-    result = await run_agent(llm, tools, [], "question", max_iterations=3)
+    result = await run_agent(llm, tools, [], "treadmill repair question", max_iterations=3)
     assert result.text == "Final answer."
     assert len(llm.calls) == 4 and len(tools.calls) == 3  # 3 capped iterations + 1 final call
     assert llm.calls[-1]["tools"] is None
@@ -106,18 +106,18 @@ async def test_agent_drops_arguments_not_in_the_tool_schema():
         [tool_call_message(("c", "search_services", '{"query": "x", "sql": "DROP TABLE service_requests"}')), text_message("ok")]
     )
     tools = FakeTools()
-    await run_agent(llm, tools, [], "q")
+    await run_agent(llm, tools, [], "treadmill repair")
     assert tools.calls == [("search_services", {"query": "x"})]
 
 
 async def test_agent_strips_reasoning_blocks_and_caps_length():
     llm = ScriptedLLM([text_message("<think>secret chain of thought</think>" + "A" * 3000)])
-    result = await run_agent(llm, FakeTools(), [], "q")
+    result = await run_agent(llm, FakeTools(), [], "treadmill repair")
     assert "secret" not in result.text and len(result.text) == 1500
 
 
 async def test_agent_handles_empty_model_output_honestly():
-    result = await run_agent(ScriptedLLM([text_message("")]), FakeTools(), [], "q")
+    result = await run_agent(ScriptedLLM([text_message("")]), FakeTools(), [], "treadmill repair")
     assert "wasn't able" in result.text
 
 
@@ -125,7 +125,7 @@ async def test_agent_caps_parallel_tool_calls():
     many = tool_call_message(*[(f"c{i}", "search_services", '{"query": "x"}') for i in range(7)])
     llm = ScriptedLLM([many, text_message("done")])
     tools = FakeTools()
-    await run_agent(llm, tools, [], "q")
+    await run_agent(llm, tools, [], "treadmill repair")
     assert len(tools.calls) == 4
     tool_msgs = [m for m in llm.calls[1]["messages"] if m["role"] == "tool"]
     assert len(tool_msgs) == 7  # every call id gets a reply, so the transcript stays valid

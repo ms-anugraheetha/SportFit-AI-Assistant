@@ -43,6 +43,29 @@ MAX_TOOL_RESULT_CHARS = 6000
 MAX_CALLS_PER_TURN = 4
 
 
+_IN_SCOPE_RE = re.compile(
+    r"\b(treadmill|bike|bicycle|cycle|spin|elliptical|rower|rowing|stepper|gym|equipment|machine|fitness|"
+    r"cardio|weights?|dumbbell|barbell|bench|rack|cable|smith|repair|fix|broken|break|faulty|fault|servic\w*|"
+    r"maint\w*|assembl\w*|disassembl\w*|install\w*|upholster\w*|spare|parts?|warrant\w*|prices?|pricing|"
+    r"cost|quotes?|technician|appointment|schedul\w*|safe\w*|unsafe|danger\w*|hazard\w*|injur\w*|noise|"
+    r"belt|motor|display|console|error|track\w*|requests?|reference|demo|status|contact|phone|email|human|"
+    r"agent|support|hours|open|location|address|sportfit|faq|offer\w*|what can you|who are you|"
+    r"hi|hello|hey|thanks?|thank you|bye)\b",
+    re.IGNORECASE,
+)
+
+OUT_OF_SCOPE_REPLY = (
+    "I'm an independent academic prototype that only helps with fitness-equipment service topics: "
+    "repair and maintenance questions, safety concerns, submitting a demo repair request, or tracking one. "
+    "I can't help with other topics. Try one of the suggested options below."
+)
+
+
+def is_in_scope(message: str) -> bool:
+    """Cheap deterministic check that a customer message is about equipment service at all."""
+    return bool(_IN_SCOPE_RE.search(message or ""))
+
+
 class ToolRunner(Protocol):
     def openai_tool_specs(self) -> list[dict[str, Any]]: ...
     async def call_tool(self, name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]: ...
@@ -88,6 +111,8 @@ async def run_agent(
     user_message: str,
     max_iterations: int = 4,
 ) -> AgentResult:
+    if not is_in_scope(user_message):
+        return AgentResult(OUT_OF_SCOPE_REPLY, [], [], 0)
     specs = tools.openai_tool_specs()
     allowed: dict[str, set[str]] = {
         s["function"]["name"]: set(s["function"]["parameters"].get("properties", {}))
