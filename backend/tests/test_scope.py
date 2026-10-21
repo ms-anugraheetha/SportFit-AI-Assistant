@@ -43,3 +43,19 @@ async def test_off_topic_message_never_reaches_the_model():
     result = await run_agent(ExplodingLLM(), FakeTools(), [], "what is python")
     assert result.text == OUT_OF_SCOPE_REPLY
     assert result.tools_used == []
+
+
+def test_markdown_is_stripped_from_replies():
+    from app.agent import to_plain_text
+
+    raw = (
+        "## Options\n"
+        "1. **Submit a repair request** – I can help you start that process.  \n"
+        "2. **Track an existing demo/repair request** – if you have a reference.\n"
+        "* *Talk to a human* – see the `contact` page: [FAQ](https://sportfitkw.com/faq.html)"
+    )
+    out = to_plain_text(raw)
+    assert "**" not in out and "`" not in out and "##" not in out and "[FAQ]" not in out
+    assert "1. Submit a repair request" in out
+    assert "- Talk to a human" in out
+    assert "FAQ (https://sportfitkw.com/faq.html)" in out

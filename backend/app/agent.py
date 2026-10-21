@@ -35,7 +35,9 @@ tracking a demo request, and reaching a human. If the customer asks about anythi
 knowledge, programming, news, homework, opinions), do NOT answer it. Politely say you can only help \
 with SportFit-style equipment service questions, and offer the suggested options (repair services, \
 submit a repair request, track a demo request, safety concern). Do not answer off-topic questions \
-even if the customer insists or says it is allowed."""
+even if the customer insists or says it is allowed.
+9. Reply in plain text only. Do not use Markdown: no asterisks, no bold, no headings, no backticks, \
+no tables. For a list, put each item on its own line starting with "1.", "2.", "3." or "- "."""
 
 _THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL | re.IGNORECASE)
 MAX_REPLY_CHARS = 1500
@@ -79,8 +81,28 @@ class AgentResult:
     iterations: int = 0
 
 
+_MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)")
+_MD_BOLD_RE = re.compile(r"(\*\*|__)(.+?)\1", re.DOTALL)
+_MD_ITALIC_RE = re.compile(r"(?<![\*\w])\*(?!\s)([^*\n]+?)(?<!\s)\*(?![\*\w])")
+_MD_HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s*", re.MULTILINE)
+_MD_BULLET_RE = re.compile(r"^\s*[-*+]\s+", re.MULTILINE)
+_MD_RULE_RE = re.compile(r"^\s*([-*_]\s*){3,}$", re.MULTILINE)
+
+
+def to_plain_text(text: str) -> str:
+    """The chat bubble shows plain text, so remove Markdown markers the model may still emit."""
+    text = _MD_LINK_RE.sub(r"\1 (\2)", text)
+    text = _MD_BOLD_RE.sub(r"\2", text)
+    text = _MD_ITALIC_RE.sub(r"\1", text)
+    text = _MD_HEADING_RE.sub("", text)
+    text = _MD_RULE_RE.sub("", text)
+    text = _MD_BULLET_RE.sub("- ", text)
+    text = text.replace("`", "")
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
 def _finalize(text: str | None) -> str:
-    cleaned = _THINK_RE.sub("", text or "").strip()
+    cleaned = to_plain_text(_THINK_RE.sub("", text or "").strip())
     if not cleaned:
         return "I wasn't able to produce an answer. You can rephrase, or type \"talk to a human\" for SportFit's published contact details."
     return cleaned[:MAX_REPLY_CHARS]
